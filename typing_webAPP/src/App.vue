@@ -1,16 +1,21 @@
-<script setup lang="ts">
-import Top from "@/views/Top.vue";
-</script>
 <template>
   <header>
-    <h1>タイピング練習</h1>
+    <h1>タイピング問題</h1>
   </header>
   <main>
     <RouterView/>
   </main>
 </template>
 <style>
-  main{
+main{
     width: 100%;
+    height: 90vh;
   }
+header{
+  background-color: rgb(202, 255, 124);
+  height: 10vh;
+}
+h1{
+  font-size: 6vh;
+}
 </style>
