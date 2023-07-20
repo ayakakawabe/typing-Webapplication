@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router=useRouter();
+
 const typingQuestionList1:string[]=["bunnka","zyouhou","gakubu"];
 const typingQuestionList2:string[]=["doshisha","daigaku"];
 const userTyping=ref<string>("");
@@ -10,16 +14,25 @@ const isShowBtn=ref<boolean>(false);
 const nowQestion=ref<number>(0);
 const btnName=ref<string>("");
 
+let typingStart:number;
+let typingEnd:number;
+let typingTime:number[]=[];
+
+let typingUserResult:boolean[]=[];
+
 const addUserTyping=(keyObj:KeyboardEvent):void=>{
     userTyping.value+=keyObj.key;
 };
 typingQuestion_split=typingQuestionList1[nowQestion.value].split("");
 const inputUserTyping=():void=>{
+    typingStart=performance.now();
     document.addEventListener("keypress",addUserTyping);
 }
 inputUserTyping();
 watch(userTyping,():void=>{
     if(userTyping.value.length==typingQuestion_split.length){
+        typingEnd=performance.now();
+        typingTime.push(typingEnd-typingStart);
         if(userTyping.value==typingQuestionList1[nowQestion.value]){
             isUserTypingCorrect=true;
             printresult.value="正解";
@@ -27,7 +40,7 @@ watch(userTyping,():void=>{
             isUserTypingCorrect=false;
             printresult.value="不正解";
         }
-        console.log(isUserTypingCorrect);
+        typingUserResult.push(isUserTypingCorrect);
         document.removeEventListener("keypress",addUserTyping);
     }
 })
@@ -46,6 +59,11 @@ const clickbtn=():void=>{
     nowQestion.value+=1;
     isShowBtn.value=false;
     printresult.value="";
+    if(nowQestion.value==typingQuestionList1.length){
+        router.push("/main/result");
+        console.log(typingTime);
+        console.log(typingUserResult);
+    }
 };
 
 watch(nowQestion,():void=>{
@@ -70,6 +88,7 @@ watch(nowQestion,():void=>{
         <div id="next">
             <button class="nextbtn" v-show="isShowBtn" v-on:click="clickbtn">{{ btnName }}</button>
         </div>
+        <p>{{ nowQestion }}</p>
     </section>
 </template>
 
