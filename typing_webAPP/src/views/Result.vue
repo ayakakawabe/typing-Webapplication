@@ -14,7 +14,6 @@ const allResult= new Map<number,allResultInter>();
 for(let key:number=1;key<=numQuestion;key++){
     allResult.set(key,{isCorrect:correctResult.value[key-1],time:timeResult.value[key-1]});
 }
-console.log(allResult);
 
 const formatIsCorrect=(key:number):string=>{
     const isCorrect=allResult.get(key)?.isCorrect;
@@ -48,6 +47,7 @@ const formatTime=(key:number,decimalPlace:number):(number|string)=>{
         <tr><th>Question</th><th>◯/✕</th><th>time(ms)</th></tr>
         <tr v-for=" key in numQuestion"><td>{{ key }}</td><td>{{ formatIsCorrect(key) }}</td><td>{{ formatTime(key,2) }}</td></tr>
     </table>
+    <button>TOPへ</button>
 </template>
 <style scoped>
 *{
@@ -82,5 +82,11 @@ tr:nth-child(even) {
 
 tr:nth-child(odd) {
 	background: #ffffff;
+}
+button{
+    display: block;
+    margin: 50px auto;
+    width: 35vw;
+    font-size: xx-large;
 }
 </style>
