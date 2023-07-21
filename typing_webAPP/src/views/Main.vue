@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch,inject, type Ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router=useRouter();
+const selectQuestion=inject("Question") as Ref<string>;
 
-const typingQuestionList1:string[]=["bunnka","zyouhou","gakubu"];
-const typingQuestionList2:string[]=["doshisha","daigaku"];
+const typingQuestionLists= new Map<string,string[]>();
+typingQuestionLists.set("Q1",["bunnka","zyouhou","gakubu"]);
+typingQuestionLists.set("Q2",["doshisha","daigaku"]);
+typingQuestionLists.set("Q3",["taipinngu","monndai"]);
+
+const nowQuestionList:string[]=typingQuestionLists.get(selectQuestion.value) as string[];
+
 const userTyping=ref<string>("");
 let typingQuestion_split:string[];
 let isUserTypingCorrect:boolean;
@@ -16,14 +22,14 @@ const btnName=ref<string>("");
 
 let typingStart:number;
 let typingEnd:number;
-let typingTime:number[]=[];
+let typingTime=inject("timeResult") as Ref<number[]>;
 
-let typingUserResult:boolean[]=[];
+let typingUserResult=inject("correctResult") as Ref<boolean[]>;
 
 const addUserTyping=(keyObj:KeyboardEvent):void=>{
     userTyping.value+=keyObj.key;
 };
-typingQuestion_split=typingQuestionList1[nowQestion.value].split("");
+typingQuestion_split=nowQuestionList[nowQestion.value].split("");
 const inputUserTyping=():void=>{
     typingStart=performance.now();
     document.addEventListener("keypress",addUserTyping);
@@ -32,24 +38,24 @@ inputUserTyping();
 watch(userTyping,():void=>{
     if(userTyping.value.length==typingQuestion_split.length){
         typingEnd=performance.now();
-        typingTime.push(typingEnd-typingStart);
-        if(userTyping.value==typingQuestionList1[nowQestion.value]){
+        typingTime.value.push(typingEnd-typingStart);
+        if(userTyping.value==nowQuestionList[nowQestion.value]){
             isUserTypingCorrect=true;
             printresult.value="正解";
         }else{
             isUserTypingCorrect=false;
             printresult.value="不正解";
         }
-        typingUserResult.push(isUserTypingCorrect);
+        typingUserResult.value.push(isUserTypingCorrect);
         document.removeEventListener("keypress",addUserTyping);
     }
 })
 watch(printresult,():void=>{
     if(printresult.value=="正解"||printresult.value=="不正解"){
         isShowBtn.value=true;
-        if(nowQestion.value<typingQuestionList1.length-1){
+        if(nowQestion.value<nowQuestionList.length-1){
             btnName.value="次へ";
-        }else if(nowQestion.value==typingQuestionList1.length-1){
+        }else if(nowQestion.value==nowQuestionList.length-1){
             btnName.value="終了";
         }
     }
@@ -59,16 +65,16 @@ const clickbtn=():void=>{
     nowQestion.value+=1;
     isShowBtn.value=false;
     printresult.value="";
-    if(nowQestion.value==typingQuestionList1.length){
+    if(nowQestion.value==nowQuestionList.length){
         router.push("/main/result");
-        console.log(typingTime);
-        console.log(typingUserResult);
+        console.log(typingTime.value);
+        console.log(typingUserResult.value);
     }
 };
 
 watch(nowQestion,():void=>{
-    if(nowQestion.value<typingQuestionList1.length){
-        typingQuestion_split=typingQuestionList1[nowQestion.value].split("");
+    if(nowQestion.value<nowQuestionList.length){
+        typingQuestion_split=nowQuestionList[nowQestion.value].split("");
         userTyping.value="";
         inputUserTyping();
     }
