@@ -6,9 +6,9 @@ const router=useRouter();
 const selectQuestion=inject("Question") as Ref<string>;
 
 const typingQuestionLists= new Map<string,[string[],string[]]>();
-typingQuestionLists.set("Q1",[["文化","情報","学部"],["bunnka","zyouhou","gakubu"]]);
-typingQuestionLists.set("Q2",[["同志社","大学"],["doshisha","daigaku"]]);
-typingQuestionLists.set("Q3",[["タイピング","課題"],["taipinngu","monndai"]]);
+typingQuestionLists.set("Q1",[["チャンピオン","ビーチボール","国語辞典","都道府県","父の威厳","犬の散歩","不思議ちゃん","私語厳禁"],["tyannpion","bi-tibo-ru","kokugozitenn","todouhukenn","titinoigenn","inunosannpo","husigityann","sigogennkinn"]]);
+typingQuestionLists.set("Q2",[["美少年","味が薄い","色鉛筆","図書委員","送りバント","羊の群れ","トランペット","クラリネット"],["bisyounenn","azigausui","iroennpitu","tosyoiinn","okuribannto","hituzinomure","torannpetto","kurarinetto"]]);
+typingQuestionLists.set("Q3",[["ドレスアップ","カスタネット","四季折々","万華鏡","大河ドラマ","電子辞書","うっとりする","ひっぱりばこ"],["doresuappu","kasutanetto","sikioriori","manngekyou","taigadorama","dennsizisyo","uttorisuru","hipparidako"]]);
 
 const nowQuestionList_JP_romaji=typingQuestionLists.get(selectQuestion.value) as Array<string[]>;
 const nowQuestionList:string[]=nowQuestionList_JP_romaji[1] as string[];
@@ -30,14 +30,17 @@ let typingTime=inject("timeResult") as Ref<number[]>;
 let typingUserResult=inject("correctResult") as Ref<boolean[]>;
 
 const addUserTyping=(keyObj:KeyboardEvent):void=>{
-    userTyping.value+=keyObj.key;
+    const inputKey:string=keyObj.key;
+    if(inputKey.match(/^[0-9a-zA-Z]{1}$/) || inputKey=="-"){
+        userTyping.value+=inputKey;
+    }
 };
 typingQuestion_split=nowQuestionList[nowQestion.value].split("");
 typingQuestion_JP=nowQuestionList_JP[nowQestion.value];
 
 const inputUserTyping=():void=>{
     typingStart=performance.now();
-    document.addEventListener("keyup",addUserTyping);
+    document.addEventListener("keydown",addUserTyping);
 }
 inputUserTyping();
 watch(userTyping,():void=>{
@@ -52,7 +55,7 @@ watch(userTyping,():void=>{
             printresult.value="不正解";
         }
         typingUserResult.value.push(isUserTypingCorrect);
-        document.removeEventListener("keyup",addUserTyping);
+        document.removeEventListener("keydown",addUserTyping);
     }
 })
 watch(printresult,():void=>{

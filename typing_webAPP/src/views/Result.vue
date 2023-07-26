@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { inject, type Ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const Question=inject<string>("Question");
 const UserName=inject<string>("UserName");
@@ -47,7 +48,7 @@ const formatTime=(key:number,decimalPlace:number):(number|string)=>{
         <tr><th>Question</th><th>◯/✕</th><th>time(ms)</th></tr>
         <tr v-for=" key in numQuestion"><td>{{ key }}</td><td>{{ formatIsCorrect(key) }}</td><td>{{ formatTime(key,2) }}</td></tr>
     </table>
-    <button>TOPへ</button>
+    <button><RouterLink to="/">TOP</RouterLink></button>
 </template>
 <style scoped>
 *{
@@ -63,7 +64,7 @@ section{
     margin-left: 20px;
 }
 table{
-    margin: 30px auto 0 auto;
+    margin: 30px auto 10px auto;
 }
 table,table *{
     border-collapse: collapse;
@@ -87,6 +88,10 @@ button{
     display: block;
     margin: 50px auto;
     width: 35vw;
-    font-size: xx-large;
+    font-size: xx-large; 
+}
+button a{
+    text-decoration: none;
+    color: black;
 }
 </style>
